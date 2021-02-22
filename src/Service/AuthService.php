@@ -24,4 +24,13 @@ class AuthService
 
         return $user !== null;
     }
+
+    public function isEmptyField(string $email, string $name, string $password): bool
+    {
+        if(empty(trim($email)) || empty(trim($name)) || empty(trim($password))){
+            return true;
+        }
+
+        return false;
+    }
 }

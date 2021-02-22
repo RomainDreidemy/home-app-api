@@ -32,10 +32,17 @@ class AuthController extends AbstractController
         $email = $request->get('email');
         $name = $request->get('name');
 
-        if($this->authService->emailIsUsed($email)){
+        $errors = [
+            'Tous les champs doivent être remplis'                  => $this->authService->isEmptyField($email, $name, $password),
+            'L\'email n\'est pas valide'                            => !filter_var($email, FILTER_VALIDATE_EMAIL),
+            'Le mot de passe doit contenir au moins 5 caractères'   => strlen($password) < 5,
+            'L\'email est déjà utilisé.'                            => $this->authService->emailIsUsed($email),
+        ];
+
+        if(in_array(true, $errors)){
             return $this->json([
                 'status' => false,
-                'message' => 'L\'email est déjà utilisé.'
+                'message' => array_search(true, $errors)
             ]);
         }
 
@@ -59,10 +66,12 @@ class AuthController extends AbstractController
         $user = $userRepository->findOneBy([
             'email'=>$request->get('email'),
         ]);
+
         if (!$user || !$encoder->isPasswordValid($user, $request->get('password'))) {
             return $this->json([
-                'message' => 'email or password is wrong.',
-            ], 500);
+                'status' => false,
+                'message' => 'email ou mot de passe incorrect.',
+            ]);
         }
         $payload = [
             "user" => $user->getUsername(),
@@ -72,7 +81,7 @@ class AuthController extends AbstractController
 
         $jwt = JWT::encode($payload, $this->getParameter('jwt_secret'), 'HS256');
         return $this->json([
-            'message' => 'success!',
+            'status' => true,
             'token' => sprintf('Bearer %s', $jwt),
         ]);
     }
