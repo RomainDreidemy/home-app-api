@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -39,6 +41,16 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     private $name;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Home::class, mappedBy="user")
+     */
+    private $homes;
+
+    public function __construct()
+    {
+        $this->homes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -129,6 +141,33 @@ class User implements UserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Home[]
+     */
+    public function getHomes(): Collection
+    {
+        return $this->homes;
+    }
+
+    public function addHome(Home $home): self
+    {
+        if (!$this->homes->contains($home)) {
+            $this->homes[] = $home;
+            $home->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHome(Home $home): self
+    {
+        if ($this->homes->removeElement($home)) {
+            $home->removeUser($this);
+        }
 
         return $this;
     }
