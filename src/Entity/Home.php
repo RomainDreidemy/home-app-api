@@ -34,6 +34,16 @@ class Home
      */
     private $state;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $share_code;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $share_code_expiration;
+
     public function __construct()
     {
         $this->User = new ArrayCollection();
@@ -89,6 +99,30 @@ class Home
     public function setState(bool $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getShareCode(): ?string
+    {
+        return $this->share_code;
+    }
+
+    public function setShareCode(?string $share_code): self
+    {
+        $this->share_code = $share_code;
+
+        return $this;
+    }
+
+    public function getShareCodeExpiration(): ?\DateTimeInterface
+    {
+        return $this->share_code_expiration;
+    }
+
+    public function setShareCodeExpiration(?\DateTimeInterface $share_code_expiration): self
+    {
+        $this->share_code_expiration = $share_code_expiration;
 
         return $this;
     }
