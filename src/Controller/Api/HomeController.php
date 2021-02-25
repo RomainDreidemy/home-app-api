@@ -110,5 +110,15 @@ class HomeController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/api/home/{id}/infos", name="home_info_api")
+     */
+    public function infos(int $id): Response
+    {
+        $home = $this->getDoctrine()->getRepository(Home::class)->find($id);
+
+        return $this->json($this->homeService->mainInformation($home));
+    }
+
 
 }

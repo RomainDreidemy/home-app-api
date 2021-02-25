@@ -106,4 +106,22 @@ class HomeService
 
         return true;
     }
+
+    public function mainInformation(Home $home): array
+    {
+        $homeReturn = [
+            'id' => $home->getId(),
+            'name' => $home->getName(),
+        ];
+
+        foreach ($home->getUser() as $user){
+            $homeReturn['users'][] = [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail()
+            ];
+        }
+
+        return $homeReturn;
+    }
 }
