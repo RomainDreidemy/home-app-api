@@ -28,9 +28,12 @@ class AuthController extends AbstractController
      */
     public function register(Request $request)
     {
-        $password = $request->get('password');
-        $email = $request->get('email');
-        $name = $request->get('name');
+        $parameters = json_decode($request->getContent(), true);
+
+        $password = $parameters['password'];
+        $email = $parameters['email'];
+        $name = $parameters['name'];
+
 
         $errors = [
             'Tous les champs doivent être remplis'                  => $this->authService->isEmptyField($email, $name, $password),
@@ -63,23 +66,29 @@ class AuthController extends AbstractController
      */
     public function login(Request $request, UserRepository $userRepository, UserPasswordEncoderInterface $encoder)
     {
+        $parameters = json_decode($request->getContent(), true);
+
+        $password = $parameters['password'];
+        $email = $parameters['email'];
+
         $user = $userRepository->findOneBy([
-            'email'=>$request->get('email'),
+            'email'=> $email,
         ]);
 
-        if (!$user || !$encoder->isPasswordValid($user, $request->get('password'))) {
+        if (!$user || !$encoder->isPasswordValid($user, $password)) {
             return $this->json([
                 'status' => false,
                 'message' => 'email ou mot de passe incorrect.',
             ]);
         }
+
         $payload = [
             "user" => $user->getUsername(),
             "exp"  => (new \DateTime())->modify("+1 month")->getTimestamp(),
         ];
 
-
         $jwt = JWT::encode($payload, $this->getParameter('jwt_secret'), 'HS256');
+
         return $this->json([
             'status' => true,
             'token' => sprintf('Bearer %s', $jwt),
