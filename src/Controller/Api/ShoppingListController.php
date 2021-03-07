@@ -5,13 +5,13 @@ namespace App\Controller\Api;
 use App\Entity\Home;
 use App\Entity\ShoppingList;
 use App\Service\HomeService;
+use App\Service\SerializerService;
 use App\Service\ShoppingListService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -21,19 +21,10 @@ class ShoppingListController extends AbstractController
     private $shoppingListService;
     private $serializer;
 
-    public function __construct(ShoppingListService $shoppingListService)
+    public function __construct(ShoppingListService $shoppingListService, SerializerService $serializer)
     {
         $this->shoppingListService = $shoppingListService;
-
-        $encoder = new JsonEncoder();
-        $defaultContext = [
-            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                return $object->getName();
-            },
-        ];
-        $normalizer = new ObjectNormalizer(null, null, null, null, null, null, $defaultContext);
-
-        $this->serializer = new Serializer([$normalizer], [$encoder]);
+        $this->serializer = $serializer;
 
     }
 
@@ -48,7 +39,7 @@ class ShoppingListController extends AbstractController
         $shoppingsList = $this->getDoctrine()->getRepository(ShoppingList::class)->findByHome($home);
 
         return $this->json([
-            'shoppings' => $this->serializer->normalize($shoppingsList, null, [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'createdAt', 'modifiedAt']]),
+            'shoppings' => $this->serializer->normalize($shoppingsList, ['id', 'name', 'createdAt', 'modifiedAt']),
             'status' => true,
         ]);
     }

@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Home;
 use App\Entity\User;
 use App\Service\HomeService;
+use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,9 +14,11 @@ use Symfony\Component\HttpFoundation\Request;
 class HomeController extends AbstractController
 {
     private $homeService;
-    public function __construct(HomeService $homeService)
+    private $serializer;
+    public function __construct(HomeService $homeService, SerializerService $serializer)
     {
         $this->homeService = $homeService;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -26,8 +29,10 @@ class HomeController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        $homes = $this->getDoctrine()->getRepository(Home::class)->findActiveHomesForUser($user);
+
         return $this->json([
-            'homes' => $this->homeService->findActiveForUser($user)
+            'homes' => $this->serializer->normalize($homes, ['id', 'name'])
         ]);
     }
 
@@ -120,7 +125,7 @@ class HomeController extends AbstractController
     {
         $home = $this->getDoctrine()->getRepository(Home::class)->find($id);
 
-        return $this->json($this->homeService->mainInformation($home));
+        return $this->json($this->serializer->normalize($home, ['id', 'name', 'user' => ['id', 'email', 'name']]));
     }
 
 
