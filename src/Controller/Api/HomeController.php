@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-
 class HomeController extends AbstractController
 {
     private $homeService;
@@ -37,10 +36,12 @@ class HomeController extends AbstractController
      */
     public function create(Request $request): Response
     {
+        $parameters = json_decode($request->getContent(), true);
+
+        $name = $parameters['name'];
+
         /** @var User $user */
         $user = $this->getUser();
-
-        $name = $request->get('name');
 
         $errors = [
             'Le nom doit contenir entre 3 et 30 caractères' => strlen($name) < 3 || strlen($name) > 30,
@@ -62,7 +63,7 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/api/home/{id}/remove", name="home_remove_api")
+     * @Route("/api/home/{id}", name="home_remove_api", methods={"DELETE"})
      */
     public function remove(int $id): Response
     {
@@ -93,9 +94,11 @@ class HomeController extends AbstractController
      */
     public function join(Request $request): Response
     {
+        $parameters = json_decode($request->getContent(), true);
+
         /** @var User $user */
         $user = $this->getUser();
-        $share_code = trim($request->get('code'));
+        $share_code = trim($parameters['code']);
 
         if(!$this->homeService->joinWithShareCode($share_code, $user)){
             return $this->json([
@@ -111,7 +114,7 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/api/home/{id}/infos", name="home_info_api")
+     * @Route("/api/home/{id}", name="home_info_api")
      */
     public function infos(int $id): Response
     {
