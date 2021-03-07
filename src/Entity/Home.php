@@ -6,6 +6,7 @@ use App\Repository\HomeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=HomeRepository::class)
@@ -21,6 +22,7 @@ class Home
 
     /**
      * @ORM\Column(type="string", length=30)
+     * @Groups("home")
      */
     private $name;
 
@@ -44,10 +46,17 @@ class Home
      */
     private $share_code_expiration;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ShoppingList::class, mappedBy="home")
+     * @Groups("shopping_list_details")
+     */
+    private $shoppingLists;
+
     public function __construct()
     {
         $this->User = new ArrayCollection();
         $this->user = new ArrayCollection();
+        $this->shoppingLists = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,6 +132,36 @@ class Home
     public function setShareCodeExpiration(?\DateTimeInterface $share_code_expiration): self
     {
         $this->share_code_expiration = $share_code_expiration;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ShoppingList[]
+     */
+    public function getShoppingLists(): Collection
+    {
+        return $this->shoppingLists;
+    }
+
+    public function addShoppingList(ShoppingList $shoppingList): self
+    {
+        if (!$this->shoppingLists->contains($shoppingList)) {
+            $this->shoppingLists[] = $shoppingList;
+            $shoppingList->setHome($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShoppingList(ShoppingList $shoppingList): self
+    {
+        if ($this->shoppingLists->removeElement($shoppingList)) {
+            // set the owning side to null (unless already changed)
+            if ($shoppingList->getHome() === $this) {
+                $shoppingList->setHome(null);
+            }
+        }
 
         return $this;
     }
