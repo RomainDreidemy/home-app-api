@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ShoppingListRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -38,6 +40,16 @@ class ShoppingList
      * @ORM\ManyToOne(targetEntity=Home::class, inversedBy="shoppingLists")
      */
     private $home;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ShoppingItem::class, mappedBy="shoppingList")
+     */
+    private $shoppingItems;
+
+    public function __construct()
+    {
+        $this->shoppingItems = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -88,6 +100,36 @@ class ShoppingList
     public function setHome(?Home $home): self
     {
         $this->home = $home;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ShoppingItem[]
+     */
+    public function getShoppingItems(): Collection
+    {
+        return $this->shoppingItems;
+    }
+
+    public function addShoppingItem(ShoppingItem $shoppingItem): self
+    {
+        if (!$this->shoppingItems->contains($shoppingItem)) {
+            $this->shoppingItems[] = $shoppingItem;
+            $shoppingItem->setShoppingList($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShoppingItem(ShoppingItem $shoppingItem): self
+    {
+        if ($this->shoppingItems->removeElement($shoppingItem)) {
+            // set the owning side to null (unless already changed)
+            if ($shoppingItem->getShoppingList() === $this) {
+                $shoppingItem->setShoppingList(null);
+            }
+        }
 
         return $this;
     }

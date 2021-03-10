@@ -25,7 +25,6 @@ class ShoppingListController extends AbstractController
     {
         $this->shoppingListService = $shoppingListService;
         $this->serializer = $serializer;
-
     }
 
     /**

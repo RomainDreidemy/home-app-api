@@ -47,9 +47,15 @@ class User implements UserInterface
      */
     private $homes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ShoppingItem::class, mappedBy="user")
+     */
+    private $shoppingItems;
+
     public function __construct()
     {
         $this->homes = new ArrayCollection();
+        $this->shoppingItems = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +173,36 @@ class User implements UserInterface
     {
         if ($this->homes->removeElement($home)) {
             $home->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ShoppingItem[]
+     */
+    public function getShoppingItems(): Collection
+    {
+        return $this->shoppingItems;
+    }
+
+    public function addShoppingItem(ShoppingItem $shoppingItem): self
+    {
+        if (!$this->shoppingItems->contains($shoppingItem)) {
+            $this->shoppingItems[] = $shoppingItem;
+            $shoppingItem->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShoppingItem(ShoppingItem $shoppingItem): self
+    {
+        if ($this->shoppingItems->removeElement($shoppingItem)) {
+            // set the owning side to null (unless already changed)
+            if ($shoppingItem->getUser() === $this) {
+                $shoppingItem->setUser(null);
+            }
         }
 
         return $this;
