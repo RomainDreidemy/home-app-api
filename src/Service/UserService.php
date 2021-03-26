@@ -37,6 +37,10 @@ class UserService
         } catch (\Exception $exception) {
             return false;
         }
+    }
 
+    private function checkContent(string $email, string $name, string $password)
+    {
+        return false;
     }
 }
