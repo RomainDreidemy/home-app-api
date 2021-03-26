@@ -63,4 +63,15 @@ class ShoppingListService
         $this->manager->remove($shoppingList);
         $this->manager->flush();
     }
+
+    public function clone(int $shopping_list_id)
+    {
+        /** @var ShoppingList $old */
+        $old = $this->manager->getRepository(ShoppingList::class)->find($shopping_list_id);
+
+        $new = clone $old;
+
+        $this->manager->persist($new);
+        $this->manager->flush();
+    }
 }

@@ -92,7 +92,21 @@ class ShoppingListController extends AbstractController
         $this->shoppingListService->remove($shoppingList);
 
         return $this->json([
-              'status' => true
+            'status' => true
         ]);
     }
+
+    /**
+     * @Route("api/shopping/{id}/clone", name="shopping_clone", methods={"POST"})
+     */
+    public function clone(int $id)
+    {
+        $this->shoppingListService->clone($id);
+
+        return $this->json([
+            'status' => true
+        ]);
+    }
+
+
 }

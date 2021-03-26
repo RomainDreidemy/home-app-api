@@ -10,6 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ShoppingItem
 {
+    public function __clone(): void
+    {
+        $this->id = null;
+        $this->buy = false;
+        $this->shoppingList = null;
+    }
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

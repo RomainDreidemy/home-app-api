@@ -13,6 +13,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class ShoppingList
 {
+
+    public function __clone(): void
+    {
+        $this->id = null;
+        $this->created_at = new \DateTime('now');
+        $this->modified_at = null;
+
+        $oldShoppingItem = $this->shoppingItems;
+
+        foreach ($oldShoppingItem as $item){
+            $this->addShoppingItem(clone $item);
+        }
+    }
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -42,7 +56,7 @@ class ShoppingList
     private $home;
 
     /**
-     * @ORM\OneToMany(targetEntity=ShoppingItem::class, mappedBy="shoppingList")
+     * @ORM\OneToMany(targetEntity=ShoppingItem::class, mappedBy="shoppingList", cascade="persist")
      */
     private $shoppingItems;
 
