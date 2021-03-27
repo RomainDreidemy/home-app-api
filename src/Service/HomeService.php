@@ -7,14 +7,19 @@ namespace App\Service;
 use App\Entity\Home;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Error\Error;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Service\ErrorHelper;
 
 class HomeService
 {
     private $manager;
+    private $validator;
 
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, ValidatorInterface $validator)
     {
         $this->manager = $manager;
+        $this->validator = $validator;
     }
 
     public function findActiveForUser(User $user)
@@ -33,7 +38,7 @@ class HomeService
         return $homes;
     }
 
-    public function create(string $name, User $user): Home
+    public function create(string $name, User $user): ErrorHelper
     {
         $home = (new Home())
             ->setName($name)
@@ -41,10 +46,16 @@ class HomeService
             ->addUser($user)
         ;
 
+        $errors = $this->validator->validate($home);
+
+        if(count($errors) > 0){
+            return new ErrorHelper(status: false, message: $errors->get(0)->getMessage());
+        }
+
         $this->manager->persist($home);
         $this->manager->flush();
 
-        return $home;
+        return new ErrorHelper(status: false, message: 'La nouvelle maison a été ajoutée');
     }
 
     public function remove(Home $home): Home

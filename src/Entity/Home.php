@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=HomeRepository::class)
@@ -24,6 +25,8 @@ class Home
     /**
      * @ORM\Column(type="string", length=30)
      * @Groups("home")
+     * @Assert\NotBlank()
+     * @Assert\Length(min=3, max=30, minMessage="Le nom doit contenir entre 3 et 30 caractères", maxMessage="Le nom doit contenir entre 3 et 30 caractères")
      */
     private $name;
 

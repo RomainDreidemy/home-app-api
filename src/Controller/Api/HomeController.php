@@ -4,13 +4,16 @@ namespace App\Controller\Api;
 
 use App\Entity\Home;
 use App\Entity\User;
+use App\Service\ErrorHelper;
 use App\Service\HomeService;
 use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
+#[Route('/api/home')]
 class HomeController extends AbstractController
 {
     private $homeService;
@@ -21,9 +24,7 @@ class HomeController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    /**
-     * @Route("/api/homes", name="home_api")
-     */
+    #[Route('s', name: 'home_api')]
     public function index(): Response
     {
         /** @var User $user */
@@ -36,10 +37,8 @@ class HomeController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/api/home/create", name="home_create_api", methods={"POST"})
-     */
-    public function create(Request $request): Response
+    #[Route("/create", name:"home_create_api", methods:['POST'])]
+    public function create(Request $request): JsonResponse
     {
         $parameters = json_decode($request->getContent(), true);
 
@@ -48,27 +47,28 @@ class HomeController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $errors = [
-            'Le nom doit contenir entre 3 et 30 caractères' => strlen($name) < 3 || strlen($name) > 30,
-        ];
+        try {
+            /** @var ErrorHelper $status */
+            $status = $this->homeService->create($name, $user);
 
-        if(in_array(true, $errors)){
+            return $this->json([
+                'status' => $status->status,
+                'message' => $status->message
+            ]);
+
+        }catch (\Exception $exception){
             return $this->json([
                 'status' => false,
-                'message' => array_search(true, $errors)
-            ]);
+                'message' => $exception->getMessage()
+            ], 500);
         }
 
-        $this->homeService->create($name, $user);
 
-        return $this->json([
-            'status' => true,
-            'message' => 'Nouvelle maison créé.'
-        ]);
+
     }
 
     /**
-     * @Route("/api/home/{id}", name="home_remove_api", methods={"DELETE"})
+     * @Route("/{id}", name="home_remove_api", methods={"DELETE"})
      */
     public function remove(int $id): Response
     {
@@ -81,7 +81,7 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/api/home/{id}/generate-share-code", name="home_generate_share_code_api")
+     * @Route("/{id}/generate-share-code", name="home_generate_share_code_api")
      */
     public function generateShareCode(int $id): Response
     {
@@ -95,7 +95,7 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/api/home/join", name="home_invite_api", methods={"POST"})
+     * @Route("/join", name="home_invite_api", methods={"POST"})
      */
     public function join(Request $request): Response
     {
@@ -119,7 +119,7 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/api/home/{id}", name="home_info_api")
+     * @Route("/{id}", name="home_info_api")
      */
     public function infos(int $id): Response
     {
