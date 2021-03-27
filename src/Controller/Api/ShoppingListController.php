@@ -11,11 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
+#[Route('/api/shopping')]
 class ShoppingListController extends AbstractController
 {
     private $shoppingListService;
@@ -27,9 +24,7 @@ class ShoppingListController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    /**
-     * @Route("/api/shoppings", name="shopping_list")
-     */
+    #[Route('s', name: 'shopping_item', methods: ['GET'])]
     public function list(Request $request): Response
     {
         $home_id = $request->get('home_id');
@@ -43,9 +38,7 @@ class ShoppingListController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/api/shopping", name="shopping_create", methods={"POST"})
-     */
+    #[Route('', name: 'shopping_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
         $parameters = json_decode($request->getContent(), true);
@@ -76,9 +69,7 @@ class ShoppingListController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("api/shopping/{id}", name="shopping_delete", methods={"DELETE"})
-     */
+    #[Route('/{id}', name: 'shopping_delete', methods: ['DELETE'])]
     public function delete(int $id){
         $shoppingList = $this->getDoctrine()->getRepository(ShoppingList::class)->find($id);
 
@@ -96,9 +87,7 @@ class ShoppingListController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("api/shopping/{id}/clone", name="shopping_clone", methods={"POST"})
-     */
+    #[Route('/{id}', name: 'shopping_delete', methods: ['POST'])]
     public function clone(int $id)
     {
         $this->shoppingListService->clone($id);

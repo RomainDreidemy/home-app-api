@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api/shopping-item')]
 class ShoppingItemController extends AbstractController
 {
     private $shoppingItemService;
@@ -23,7 +24,7 @@ class ShoppingItemController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    #[Route('/api/shopping-items/{id}', name: 'shopping_item', methods: ['GET'])]
+    #[Route('s/{id}', name: 'shopping_item', methods: ['GET'])]
     public function list($id): Response
     {
         $shopping_items = ($this->getDoctrine()->getRepository(ShoppingList::class)->find($id))?->getShoppingItems();
@@ -46,7 +47,7 @@ class ShoppingItemController extends AbstractController
         ]);
     }
 
-    #[Route('/api/shopping-item', name: 'shopping_item_create', methods: ['POST'])]
+    #[Route('', name: 'shopping_item_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
         $parameters = json_decode($request->getContent(), true);
@@ -63,7 +64,7 @@ class ShoppingItemController extends AbstractController
         ]);
     }
 
-    #[Route('/api/shopping-items/{id}/buy', name: 'shopping_item_buy', methods: ['PATCH'])]
+    #[Route('s/{id}/buy', name: 'shopping_item_buy', methods: ['PATCH'])]
     public function buy(int $id): Response
     {
         $status = $this->shoppingItemService->switchBuy($id);
@@ -74,7 +75,7 @@ class ShoppingItemController extends AbstractController
         ]);
     }
 
-    #[Route('/api/shopping-item/{id}', name: 'shopping_item_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'shopping_item_delete', methods: ['DELETE'])]
     public function delete(int $id): Response
     {
         $status = $this->shoppingItemService->remove($id);

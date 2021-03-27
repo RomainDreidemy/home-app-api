@@ -62,9 +62,6 @@ class HomeController extends AbstractController
                 'message' => $exception->getMessage()
             ], 500);
         }
-
-
-
     }
 
     #[Route('/{id}', name: 'home_remove_api', methods: ["DELETE"])]
