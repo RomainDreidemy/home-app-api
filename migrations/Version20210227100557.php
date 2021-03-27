@@ -32,4 +32,9 @@ final class Version20210227100557 extends AbstractMigration
         $this->addSql('DROP INDEX IDX_3DC1A45928CDC89C ON shopping_list');
         $this->addSql('ALTER TABLE shopping_list DROP home_id');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

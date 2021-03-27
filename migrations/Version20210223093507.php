@@ -28,4 +28,9 @@ final class Version20210223093507 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE home DROP share_code, DROP share_code_expiration');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
