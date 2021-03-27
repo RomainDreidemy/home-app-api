@@ -7,12 +7,13 @@ namespace App\Service;
 use App\Entity\Home;
 use App\Entity\ShoppingList;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ShoppingListService
 {
     private $manager;
 
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, private ValidatorInterface $validator)
     {
         $this->manager = $manager;
     }
@@ -35,16 +36,28 @@ class ShoppingListService
         return $shoppingListsReturn;
     }
 
-    public function create(string $name, Home $home)
+    public function create(string $name, int $home_id): ErrorHelper
     {
+        $home = $this->manager->getRepository(Home::class)->find($home_id);
+        if(is_null($home)){
+            return new ErrorHelper(status: false, message: 'La maison n\'existe pas');
+        }
+
         $shoppingList = (new ShoppingList())
             ->setName($name)
             ->setCreatedAt(new \DateTime())
             ->setHome($home)
         ;
 
+        $errors = $this->validator->validate($shoppingList);
+        if(count($errors) > 0){
+            return new ErrorHelper(status: false, message: $errors->get(0)->getMessage());
+        }
+
         $this->manager->persist($shoppingList);
         $this->manager->flush();
+
+        return new ErrorHelper(status: true, message: 'La liste de course à été créée.');
     }
 
     public function update(string $name)
@@ -54,8 +67,15 @@ class ShoppingListService
             ->setModifiedAt(new \DateTime())
         ;
 
+        $errors = $this->validator->validate($shoppingList);
+        if(count($errors) > 0){
+            return new ErrorHelper(status: false, message: $errors->get(0)->getMessage());
+        }
+
         $this->manager->persist($shoppingList);
         $this->manager->flush();
+
+        return new ErrorHelper(status: true, message: 'La liste de course a été modifié.');
     }
 
     public function remove(ShoppingList $shoppingList)

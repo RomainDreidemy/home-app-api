@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Home;
 use App\Entity\ShoppingList;
+use App\Service\ErrorHelper;
 use App\Service\HomeService;
 use App\Service\SerializerService;
 use App\Service\ShoppingListService;
@@ -48,25 +49,21 @@ class ShoppingListController extends AbstractController
 
         $home = $this->getDoctrine()->getRepository(Home::class)->find($home_id);
 
-        $errors = [
-            'name non renseigné' => $name === null,
-            'home_id non renseigné' => $home_id === null,
-            'Maison introuvable' => $home === null,
-        ];
+        try {
+            /** @var ErrorHelper $status */
+            $status = $this->shoppingListService->create($name, $home);
 
-        if(in_array(true, $errors)){
             return $this->json([
-                'message' => array_search(true, $errors),
-                'status' => false,
+                'status' => $status->status,
+                'message' => $status->message
             ]);
+
+        }catch (\Exception $exception){
+            return $this->json([
+                'status' => false,
+                'message' => $exception->getMessage()
+            ], 500);
         }
-
-        $this->shoppingListService->create($name, $home);
-
-        return $this->json([
-            'message' => 'La liste de course à été créer avec succes',
-            'status' => true,
-        ]);
     }
 
     #[Route('/{id}', name: 'shopping_delete', methods: ['DELETE'])]
