@@ -11,14 +11,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface
 
 class UserService
 {
-    private $manager;
-    private $passwordEncoder;
-
-    public function __construct(EntityManagerInterface $manager, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        $this->manager = $manager;
-        $this->passwordEncoder = $passwordEncoder;
-    }
+    public function __construct(private EntityManagerInterface $manager, private UserPasswordEncoderInterface $passwordEncoder){}
 
     public function create(string $email, string $name, string $password): bool
     {

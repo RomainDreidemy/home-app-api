@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Home;
 use App\Entity\ShoppingList;
+use App\Utils\ErrorHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

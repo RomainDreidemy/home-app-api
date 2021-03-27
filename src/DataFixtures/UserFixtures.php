@@ -17,6 +17,7 @@ class UserFixtures extends Fixture
         $users = [
             ['name' => 'Romain Dreidemy', 'email' =>'dreidemyromain@gmail.com', 'password' => 'Romain'],
             ['name' => 'Lucie Pompougnac', 'email' =>'lucie.pompougnac@gmail.com', 'password' => 'Lucie'],
+            ['name' => 'testFindActiveForUser', 'email' =>'testFindActiveForUser@gmail.com', 'password' => 'testFindActiveForUser'],
         ];
 
 

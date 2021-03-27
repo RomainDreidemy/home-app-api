@@ -4,7 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Home;
 use App\Entity\ShoppingList;
-use App\Service\ErrorHelper;
+use App\Utils\ErrorHelper;
 use App\Service\HomeService;
 use App\Service\SerializerService;
 use App\Service\ShoppingListService;
