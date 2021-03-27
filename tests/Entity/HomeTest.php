@@ -5,6 +5,7 @@ namespace App\Tests\Entity;
 
 
 use App\Entity\Home;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class HomeTest extends KernelTestCase
@@ -14,6 +15,7 @@ class HomeTest extends KernelTestCase
         return (new Home())
             ->setName('Appartement')
             ->setState(true)
+            ->addUser((new User())->setName('Test'))
         ;
     }
 
@@ -33,5 +35,8 @@ class HomeTest extends KernelTestCase
     {
         $this->assertHasErrors($this->getEntity()->setName('A'), 1);
         $this->assertHasErrors($this->getEntity()->setName('Ab'), 1);
+
+        $homeWithoutUser = (new Home())->setName('Appartement')->setState(true);
+        $this->assertHasErrors($homeWithoutUser, 1);
     }
 }

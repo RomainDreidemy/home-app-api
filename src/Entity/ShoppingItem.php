@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ShoppingItemRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ShoppingItemRepository::class)
@@ -26,6 +27,7 @@ class ShoppingItem
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\Length(min=2, max=50, minMessage="Le nom doit contenir au moins {{ limit }} caractères.", maxMessage="Le nom doit contenir {{ limit }} caractères maximum.")
      */
     private $name;
 
@@ -36,11 +38,13 @@ class ShoppingItem
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="shoppingItems")
+     * @Assert\NotNull(message="Un item doit appartenir à un utilisateur.")
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity=ShoppingList::class, inversedBy="shoppingItems")
+     * @Assert\NotNull(message="Un item doit appartenir à une liste de course.")
      */
     private $shoppingList;
 

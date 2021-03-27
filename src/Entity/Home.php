@@ -32,6 +32,10 @@ class Home
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="homes")
+     * @Assert\Count(
+     *      min = 1,
+     *      minMessage = "La maison doit avoir un moins un personne.",
+     * )
      */
     private $user;
 

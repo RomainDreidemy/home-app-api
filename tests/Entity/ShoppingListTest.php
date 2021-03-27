@@ -5,19 +5,23 @@ namespace App\Tests\Entity;
 
 
 use App\Entity\Home;
+use App\Entity\ShoppingList;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class HomeTest extends KernelTestCase
+class ShoppingListTest extends KernelTestCase
 {
-    public function getEntity(): Home
+    public function getEntity(): ShoppingList
     {
-        return (new Home())
+        return (new ShoppingList())
             ->setName('Appartement')
-            ->setState(true)
+            ->setCreatedAt(new \DateTime('now'))
+            ->setModifiedAt(new \DateTime('+ 1 day'))
+            ->setHome((new Home())->setName('Test')->setState(true))
         ;
     }
 
-    public function assertHasErrors(Home $home, int $number = 0)
+
+    public function assertHasErrors(ShoppingList $home, int $number = 0)
     {
         self::bootKernel();
         $errors = self::$container->get('validator')->validate($home);
@@ -27,11 +31,15 @@ class HomeTest extends KernelTestCase
     public function testValidEntity()
     {
         $this->assertHasErrors($this->getEntity());
+        $this->assertHasErrors($this->getEntity()->setModifiedAt(null));
     }
 
     public function testInvalidEntity()
     {
         $this->assertHasErrors($this->getEntity()->setName('A'), 1);
         $this->assertHasErrors($this->getEntity()->setName('Ab'), 1);
+        $this->assertHasErrors($this->getEntity()->setName(''), 1);
+
+        $this->assertHasErrors($this->getEntity()->setHome(null), 1);
     }
 }
