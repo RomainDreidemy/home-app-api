@@ -78,9 +78,6 @@ class HomeController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id}/generate-share-code", name="home_generate_share_code_api")
-     */
     #[Route('/{id}/generate-share-code', name: 'home_generate_share_code_api')]
     public function generateShareCode(int $id): Response
     {
