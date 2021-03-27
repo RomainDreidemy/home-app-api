@@ -67,9 +67,7 @@ class HomeController extends AbstractController
 
     }
 
-    /**
-     * @Route("/{id}", name="home_remove_api", methods={"DELETE"})
-     */
+    #[Route('/{id}', name: 'home_remove_api', methods: ["DELETE"])]
     public function remove(int $id): Response
     {
         $this->homeService->remove($this->getDoctrine()->getRepository(Home::class)->find($id));
@@ -83,6 +81,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/{id}/generate-share-code", name="home_generate_share_code_api")
      */
+    #[Route('/{id}/generate-share-code', name: 'home_generate_share_code_api')]
     public function generateShareCode(int $id): Response
     {
         $homeReturn = $this->homeService->generateShareCode($this->getDoctrine()->getRepository(Home::class)->find($id));
@@ -94,9 +93,7 @@ class HomeController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/join", name="home_invite_api", methods={"POST"})
-     */
+    #[Route('/join', name: 'home_invite_api', methods: ["POST"])]
     public function join(Request $request): Response
     {
         $parameters = json_decode($request->getContent(), true);
@@ -118,9 +115,7 @@ class HomeController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id}", name="home_info_api")
-     */
+    #[Route('/{id}', name: 'home_info_api')]
     public function infos(int $id): Response
     {
         $home = $this->getDoctrine()->getRepository(Home::class)->find($id);
