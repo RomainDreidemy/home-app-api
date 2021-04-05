@@ -57,10 +57,16 @@ class User implements UserInterface
      */
     private $shoppingItems;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Chore::class, mappedBy="user")
+     */
+    private $chores;
+
     public function __construct()
     {
         $this->homes = new ArrayCollection();
         $this->shoppingItems = new ArrayCollection();
+        $this->chores = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -207,6 +213,36 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($shoppingItem->getUser() === $this) {
                 $shoppingItem->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Chore[]
+     */
+    public function getChores(): Collection
+    {
+        return $this->chores;
+    }
+
+    public function addChore(Chore $chore): self
+    {
+        if (!$this->chores->contains($chore)) {
+            $this->chores[] = $chore;
+            $chore->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChore(Chore $chore): self
+    {
+        if ($this->chores->removeElement($chore)) {
+            // set the owning side to null (unless already changed)
+            if ($chore->getUser() === $this) {
+                $chore->setUser(null);
             }
         }
 

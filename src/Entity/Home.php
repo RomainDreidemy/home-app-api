@@ -62,11 +62,17 @@ class Home
      */
     private $shoppingLists;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Chore::class, mappedBy="home")
+     */
+    private $chores;
+
     public function __construct()
     {
         $this->User = new ArrayCollection();
         $this->user = new ArrayCollection();
         $this->shoppingLists = new ArrayCollection();
+        $this->chores = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -170,6 +176,36 @@ class Home
             // set the owning side to null (unless already changed)
             if ($shoppingList->getHome() === $this) {
                 $shoppingList->setHome(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Chore[]
+     */
+    public function getChores(): Collection
+    {
+        return $this->chores;
+    }
+
+    public function addChore(Chore $chore): self
+    {
+        if (!$this->chores->contains($chore)) {
+            $this->chores[] = $chore;
+            $chore->setHome($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChore(Chore $chore): self
+    {
+        if ($this->chores->removeElement($chore)) {
+            // set the owning side to null (unless already changed)
+            if ($chore->getHome() === $this) {
+                $chore->setHome(null);
             }
         }
 
