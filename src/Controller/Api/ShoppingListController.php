@@ -47,11 +47,9 @@ class ShoppingListController extends AbstractController
         $name = $parameters['name'];
         $home_id = $parameters['home_id'];
 
-        $home = $this->getDoctrine()->getRepository(Home::class)->find($home_id);
-
         try {
             /** @var ErrorHelper $status */
-            $status = $this->shoppingListService->create($name, $home);
+            $status = $this->shoppingListService->create($name, $home_id);
 
             return $this->json([
                 'status' => $status->status,
