@@ -65,6 +65,18 @@ class ChoreService
         return new ErrorHelper(status: true, message: 'La tâche ménagère a été mis à jour.', data: $chore);
     }
 
+    public function delete(int $id): ErrorHelper
+    {
+        $chore = $this->choreRepository->find($id);
+
+        if(is_null($chore)) return new ErrorHelper(status: false, message: 'La tâcge lénagère n\'éxiste pas.', data: $chore);
+
+        $this->manager->remove($chore);
+        $this->manager->flush();
+
+        return new ErrorHelper(status: true, message: 'La tâche ménagère a été supprimé.', data: $chore);
+    }
+
     public function distribute(int $home_id, bool $reload = false): ErrorHelper
     {
         $home = $this->homeRepository->find($home_id);

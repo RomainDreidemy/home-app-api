@@ -41,6 +41,17 @@ class ChoreController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(int $id): Response
+    {
+        $status = $this->choreService->delete($id);
+
+        return $this->json([
+            'status' => $status->status,
+            'message' => $status->message
+        ]);
+    }
+
     #[Route('/distribute', name: 'chore_distribute', methods: ['POST'])]
     public function distribute(Request $request): Response
     {
@@ -56,4 +67,6 @@ class ChoreController extends AbstractController
             'message' => $status->message
         ]);
     }
+
+
 }
