@@ -36,6 +36,30 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+//    public function findUserWithLessPoint($home_id): User
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->select('u, count(c.point)')
+//            ->leftJoin('u.chores', 'c')
+//            ->innerJoin('u.homes', 'h')
+//            ->andWhere('h.id = :id')
+//            ->setParameter('id', $home_id)
+//            ->groupBy('u.id')
+//            ->getQuery()
+//            ->getResult()
+//            ;
+//    }
+    public function findByHome(int $home_id)
+    {
+        return $this->createQueryBuilder('u')
+            ->innerJoin('u.homes', 'h')
+            ->where('h.id = :id')
+            ->setParameter('id', $home_id)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

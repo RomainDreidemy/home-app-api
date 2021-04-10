@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Chore;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +18,29 @@ class ChoreRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Chore::class);
+    }
+
+    public function findWithoutUser(int $home_id): array
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.home', 'h')
+            ->leftJoin('c.user', 'u')
+            ->where('u.id is null')
+            ->andWhere('h.id = :id')
+            ->setParameter('id', $home_id)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function removeUser(int $home_id)
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = 'UPDATE chore SET user_id = null WHERE home_id = :home_id';
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['home_id' => $home_id]);
     }
 
     // /**
