@@ -2,7 +2,9 @@
 
 namespace App\Controller\Api;
 
+use App\Repository\ChoreRepository;
 use App\Service\ChoreService;
+use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,15 +14,21 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChoreController extends AbstractController
 {
     public function __construct(
-        private ChoreService $choreService
+        private ChoreService $choreService,
+        private ChoreRepository $choreRepository,
+        private SerializerService $serializer
     ){}
 
-    #[Route('/chore', name: 'chore', methods: ['GET'])]
-    public function index(): Response
+    #[Route('s', name: 'chores', methods: ['GET'])]
+    public function index(Request $request): Response
     {
+        $home_id = $request->get('home_id');
+
+        $chores = $this->choreRepository->findByHomeId($home_id);
+
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ChoreController.php',
+            'status' => true,
+            'chores' => $this->serializer->normalize($chores, ['id', 'name', 'point', 'user' => ['id', 'name']])
         ]);
     }
 

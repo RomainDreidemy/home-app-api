@@ -20,6 +20,17 @@ class ChoreRepository extends ServiceEntityRepository
         parent::__construct($registry, Chore::class);
     }
 
+    public function findByHomeId(int $home_id): array
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.home', 'h')
+            ->andWhere('h.id = :id')
+            ->setParameter('id', $home_id)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function findWithoutUser(int $home_id): array
     {
         return $this->createQueryBuilder('c')
